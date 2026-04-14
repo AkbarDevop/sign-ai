@@ -98,27 +98,113 @@ export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
   "аптека": { gloss: "PHARMACY", description: "Mortar and pestle motion", rightArmX: 0.1, rightArmY: 0.5, leftArmX: -0.1, leftArmY: 0.45, rightFingers: [0,0,0,0,0], leftFingers: [1,1,1,1,1], rotation: 0, category: "noun" },
   "больница": { gloss: "HOSPITAL", description: "Cross on arm", rightArmX: 0.0, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.5, rightFingers: [0,1,0,0,0], leftFingers: [1,1,1,1,1], rotation: 0, category: "noun" },
   "автобус": { gloss: "BUS", description: "Hands on steering wheel", rightArmX: 0.2, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.55, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  // Common phrases and words
+  "дела": { gloss: "AFFAIRS/HOW-ARE-YOU", description: "Palms up, move outward", rightArmX: 0.25, rightArmY: 0.5, leftArmX: -0.25, leftArmY: 0.5, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "basic" },
+  "нормально": { gloss: "NORMAL/FINE", description: "Flat hand rocks side to side", rightArmX: 0.3, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
+  "извините": { gloss: "SORRY", description: "Fist circles on chest", rightArmX: 0.05, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "greeting" },
+  "до свидания": { gloss: "GOODBYE", description: "Wave hand forward", rightArmX: 0.4, rightArmY: 0.75, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -10, category: "greeting" },
+  "можно": { gloss: "CAN/MAY", description: "Fists move down together", rightArmX: 0.2, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.55, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
+  "нельзя": { gloss: "CANNOT/FORBIDDEN", description: "Crossed arms push out", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.15, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "basic" },
+  "хочу": { gloss: "WANT", description: "Hand pulls toward chest", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -10, category: "basic" },
+  "не хочу": { gloss: "NOT-WANT", description: "Hand pushes away from chest", rightArmX: 0.35, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 10, category: "basic" },
+  "знаю": { gloss: "KNOW", description: "Fingertips tap forehead", rightArmX: 0.25, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
+  "не знаю": { gloss: "NOT-KNOW", description: "Hand waves away from forehead", rightArmX: 0.35, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 15, category: "basic" },
+  "люблю": { gloss: "LOVE", description: "Arms cross over chest", rightArmX: 0.05, rightArmY: 0.55, leftArmX: -0.05, leftArmY: 0.55, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
+  "вода": { gloss: "WATER", description: "Fingers tap chin", rightArmX: 0.1, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "еда": { gloss: "FOOD", description: "Fingers to mouth", rightArmX: 0.1, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "спать": { gloss: "SLEEP", description: "Hand tilts to head side", rightArmX: 0.3, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 30, category: "verb" },
+  "идти": { gloss: "GO/WALK", description: "Two fingers walk forward", rightArmX: 0.3, rightArmY: 0.5, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,1,0,0], leftFingers: [0,0,0,0,0], rotation: -90, category: "verb" },
+  "ждать": { gloss: "WAIT", description: "Hands up, fingers wiggle", rightArmX: 0.2, rightArmY: 0.6, leftArmX: -0.2, leftArmY: 0.6, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "verb" },
+  "говорить": { gloss: "SPEAK/TALK", description: "Index finger from mouth forward", rightArmX: 0.15, rightArmY: 0.75, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "verb" },
+  "смотреть": { gloss: "LOOK/WATCH", description: "V-fingers from eyes forward", rightArmX: 0.3, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,1,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "verb" },
+  "слышать": { gloss: "HEAR", description: "Hand cups ear", rightArmX: 0.35, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "verb" },
+  "писать": { gloss: "WRITE", description: "Writing motion on palm", rightArmX: 0.1, rightArmY: 0.5, leftArmX: -0.15, leftArmY: 0.5, rightFingers: [1,1,0,0,0], leftFingers: [1,1,1,1,1], rotation: 0, category: "verb" },
+  "читать": { gloss: "READ", description: "V-fingers scan open palm", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.15, leftArmY: 0.5, rightFingers: [0,1,1,0,0], leftFingers: [1,1,1,1,1], rotation: 0, category: "verb" },
+  "учиться": { gloss: "STUDY/LEARN", description: "Fingers pick from palm to head", rightArmX: 0.25, rightArmY: 0.75, leftArmX: -0.15, leftArmY: 0.5, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "verb" },
+  "звонить": { gloss: "CALL/PHONE", description: "Y-hand at ear", rightArmX: 0.35, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "verb" },
+  "сколько": { gloss: "HOW-MUCH", description: "Fingers flick open from fist", rightArmX: 0.3, rightArmY: 0.6, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "question" },
+  "почему": { gloss: "WHY", description: "Index finger taps temple then forward", rightArmX: 0.3, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: -15, category: "question" },
+  "кто": { gloss: "WHO", description: "Index finger circles in air", rightArmX: 0.3, rightArmY: 0.65, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: 20, category: "question" },
+  "мама": { gloss: "MOTHER", description: "Palm strokes cheek down", rightArmX: 0.25, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "папа": { gloss: "FATHER", description: "Fist taps forehead side", rightArmX: 0.25, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "друг": { gloss: "FRIEND", description: "Index fingers hook together", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.15, leftArmY: 0.55, rightFingers: [0,1,0,0,0], leftFingers: [0,1,0,0,0], rotation: 0, category: "noun" },
+  "школа": { gloss: "SCHOOL", description: "Clap hands twice", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.15, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "noun" },
+  "машина": { gloss: "CAR", description: "Hands on steering wheel, small", rightArmX: 0.15, rightArmY: 0.5, leftArmX: -0.15, leftArmY: 0.5, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 15, category: "noun" },
+  "телефон": { gloss: "PHONE", description: "Y-hand at ear", rightArmX: 0.35, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "магазин": { gloss: "STORE/SHOP", description: "Hands exchange motion", rightArmX: 0.2, rightArmY: 0.5, leftArmX: -0.2, leftArmY: 0.5, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: -10, category: "noun" },
+  "сегодня": { gloss: "TODAY", description: "Both hands point down twice", rightArmX: 0.2, rightArmY: 0.5, leftArmX: -0.2, leftArmY: 0.5, rightFingers: [0,1,0,0,0], leftFingers: [0,1,0,0,0], rotation: -90, category: "time" },
+  "завтра": { gloss: "TOMORROW", description: "Thumb flicks forward from cheek", rightArmX: 0.3, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "time" },
+  "вчера": { gloss: "YESTERDAY", description: "Thumb points back over shoulder", rightArmX: 0.3, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 180, category: "time" },
+  "большой": { gloss: "BIG", description: "Hands spread wide apart", rightArmX: 0.35, rightArmY: 0.55, leftArmX: -0.35, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "adjective" },
+  "маленький": { gloss: "SMALL", description: "Hands close together", rightArmX: 0.1, rightArmY: 0.55, leftArmX: -0.1, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "adjective" },
+  "красивый": { gloss: "BEAUTIFUL", description: "Hand circles face", rightArmX: 0.2, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
+  "быстро": { gloss: "FAST/QUICK", description: "Fists pull back quickly", rightArmX: 0.25, rightArmY: 0.55, leftArmX: -0.25, leftArmY: 0.55, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
+  "медленно": { gloss: "SLOW", description: "Hand slides slowly on arm", rightArmX: 0.1, rightArmY: 0.5, leftArmX: -0.2, leftArmY: 0.45, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "adjective" },
 };
+
+// Map words to video files in /signs/
+export const RSL_VIDEOS: Record<string, string> = {
+  "привет": "/signs/privet.mp4",
+  "спасибо": "/signs/spasibo.mp4",
+  "да": "/signs/da.mp4",
+  "нет": "/signs/net.mp4",
+  "помощь": "/signs/pomosh.mp4",
+  "пожалуйста": "/signs/pozhaluysta.mp4",
+  "здравствуйте": "/signs/zdravstvuyte.mp4",
+  "до свидания": "/signs/do_svidaniya.mp4",
+  "хорошо": "/signs/horosho.mp4",
+  "плохо": "/signs/ploho.mp4",
+  "где": "/signs/gde.mp4",
+  "когда": "/signs/kogda.mp4",
+  "что": "/signs/chto.mp4",
+  "как": "/signs/kak.mp4",
+  "мама": "/signs/mama.mp4",
+  "папа": "/signs/papa.mp4",
+  "дом": "/signs/dom.mp4",
+  "работа": "/signs/rabota.mp4",
+  "вода": "/signs/voda.mp4",
+  "еда": "/signs/eda.mp4",
+  "друг": "/signs/drug.mp4",
+};
+
+// Multi-word phrases to check before individual words
+const MULTI_WORD_PHRASES = Object.keys(RSL_COMMON_SIGNS).filter(k => k.includes(" "));
 
 // Convert text to gloss tokens
 export function textToGloss(text: string): Array<{ type: "word" | "fingerspell"; value: string; sign?: WordSign; letters?: string[] }> {
-  const words = text.toLowerCase().trim().split(/\s+/);
+  const words = text.toLowerCase().trim().split(/\s+/).map(w => w.replace(/[.,!?;:'"()]/g, "")).filter(Boolean);
   const result: Array<{ type: "word" | "fingerspell"; value: string; sign?: WordSign; letters?: string[] }> = [];
 
-  for (const word of words) {
-    const cleanWord = word.replace(/[.,!?;:'"()]/g, "");
-    if (!cleanWord) continue;
-
-    if (RSL_COMMON_SIGNS[cleanWord]) {
-      result.push({ type: "word", value: cleanWord, sign: RSL_COMMON_SIGNS[cleanWord] });
-    } else {
-      // Fingerspell unknown words
-      const upperLetters = cleanWord.toUpperCase().split("");
-      const validLetters = upperLetters.filter(l => RSL_ALPHABET[l]);
-      if (validLetters.length > 0) {
-        result.push({ type: "fingerspell", value: cleanWord, letters: validLetters });
+  let i = 0;
+  while (i < words.length) {
+    // Try multi-word phrases first (check 3 words, then 2)
+    let matched = false;
+    for (let len = 3; len >= 2; len--) {
+      if (i + len <= words.length) {
+        const phrase = words.slice(i, i + len).join(" ");
+        if (RSL_COMMON_SIGNS[phrase]) {
+          result.push({ type: "word", value: phrase, sign: RSL_COMMON_SIGNS[phrase] });
+          i += len;
+          matched = true;
+          break;
+        }
       }
     }
+    if (matched) continue;
+
+    // Single word lookup
+    const word = words[i];
+    if (RSL_COMMON_SIGNS[word]) {
+      result.push({ type: "word", value: word, sign: RSL_COMMON_SIGNS[word] });
+    } else {
+      // Fingerspell unknown words
+      const upperLetters = word.toUpperCase().split("");
+      const validLetters = upperLetters.filter(l => RSL_ALPHABET[l]);
+      if (validLetters.length > 0) {
+        result.push({ type: "fingerspell", value: word, letters: validLetters });
+      }
+    }
+    i++;
   }
 
   return result;

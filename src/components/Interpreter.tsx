@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import SignAvatar from "./SignAvatar";
-import { RSL_ALPHABET, RSL_COMMON_SIGNS, textToGloss } from "@/lib/rsl-alphabet";
+import { RSL_ALPHABET, RSL_COMMON_SIGNS, RSL_VIDEOS, textToGloss } from "@/lib/rsl-alphabet";
 import type { HandPose, WordSign } from "@/lib/rsl-alphabet";
 
 type SignState = {
@@ -23,6 +23,7 @@ export default function Interpreter() {
   const [textInput, setTextInput] = useState("");
   const [mode, setMode] = useState<"mic" | "text">("mic");
   const [error, setError] = useState<string | null>(null);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const isListeningRef = useRef(false);
@@ -34,6 +35,8 @@ export default function Interpreter() {
     if (queue.length === 0) {
       queueProcessingRef.current = false;
       setCurrentSign({ type: "idle", label: "" });
+      // Keep video visible for a bit after queue ends
+      setTimeout(() => setActiveVideo(null), 3000);
       return;
     }
 
@@ -42,7 +45,18 @@ export default function Interpreter() {
     setCurrentSign(nextSign);
     setSignQueue(rest);
 
-    const duration = nextSign.type === "fingerspell" ? 600 : 1200;
+    // Show video if available for this word
+    const videoUrl = nextSign.type === "word" ? RSL_VIDEOS[nextSign.label] : null;
+    if (videoUrl) {
+      setActiveVideo(videoUrl);
+    }
+
+    // Longer duration for words with video so it can play
+    let duration = 600; // fingerspell
+    if (nextSign.type === "word") {
+      duration = videoUrl ? 3500 : 1200;
+    }
+
     signTimeoutRef.current = setTimeout(() => {
       processQueue(rest);
     }, duration);
@@ -243,9 +257,31 @@ export default function Interpreter() {
             </div>
           )}
 
-          {/* Avatar */}
-          <div className="flex-1 flex items-center justify-center w-full max-w-md">
-            <SignAvatar currentSign={currentSign} />
+          {/* Avatar + Reference Video side by side */}
+          <div className="flex-1 flex items-center justify-center w-full max-w-3xl gap-4">
+            {/* Avatar */}
+            <div className="flex-1 flex items-center justify-center max-w-sm">
+              <SignAvatar currentSign={currentSign} />
+            </div>
+
+            {/* Reference video */}
+            {activeVideo && (
+              <div className="flex-1 flex flex-col items-center max-w-xs sign-enter">
+                <p className="text-xs text-zinc-500 mb-2">Reference</p>
+                <div className="rounded-xl overflow-hidden border border-white/10 bg-zinc-900 shadow-lg">
+                  <video
+                    key={activeVideo}
+                    src={activeVideo}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full max-h-[280px] object-contain"
+                  />
+                </div>
+                <p className="text-xs text-zinc-600 mt-1">spreadthesign.com</p>
+              </div>
+            )}
           </div>
 
           {/* Sign description */}
