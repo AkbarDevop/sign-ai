@@ -25,6 +25,7 @@ export default function Interpreter() {
   const [error, setError] = useState<string | null>(null);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const isListeningRef = useRef(false);
   const queueProcessingRef = useRef(false);
   const signTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -142,7 +143,7 @@ export default function Interpreter() {
     };
 
     recognition.onend = () => {
-      if (isListening) {
+      if (isListeningRef.current) {
         // Restart if we're supposed to be listening
         try { recognition.start(); } catch {}
       }
@@ -154,7 +155,7 @@ export default function Interpreter() {
       recognition.abort();
       if (signTimeoutRef.current) clearTimeout(signTimeoutRef.current);
     };
-  }, [language, isListening, processText]);
+  }, [language, processText]);
 
   // Update language on recognition when it changes
   useEffect(() => {
@@ -167,6 +168,7 @@ export default function Interpreter() {
     if (!recognitionRef.current) return;
 
     if (isListening) {
+      isListeningRef.current = false;
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
@@ -175,6 +177,7 @@ export default function Interpreter() {
       setError(null);
       try {
         recognitionRef.current.start();
+        isListeningRef.current = true;
         setIsListening(true);
       } catch {
         setError("Could not start speech recognition. Please try again.");
