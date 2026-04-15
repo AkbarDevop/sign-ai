@@ -30,13 +30,29 @@ export default function Interpreter() {
   const queueProcessingRef = useRef(false);
   const signTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Get video duration in ms
+  const getVideoDuration = (url: string): Promise<number> => {
+    return new Promise((resolve) => {
+      const video = document.createElement("video");
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        resolve(video.duration * 1000);
+        video.remove();
+      };
+      video.onerror = () => {
+        resolve(1200);
+        video.remove();
+      };
+      video.src = url;
+    });
+  };
+
   // Process sign queue - show each sign for a duration
-  const processQueue = useCallback((queue: SignState[]) => {
+  const processQueue = useCallback(async (queue: SignState[]) => {
     if (queue.length === 0) {
       queueProcessingRef.current = false;
       setCurrentSign({ type: "idle", label: "" });
-      // Keep video visible for a bit after queue ends
-      setTimeout(() => setActiveVideo(null), 3000);
+      setTimeout(() => setActiveVideo(null), 2000);
       return;
     }
 
@@ -51,10 +67,13 @@ export default function Interpreter() {
       setActiveVideo(videoUrl);
     }
 
-    // Longer duration for words with video so it can play
-    let duration = 600; // fingerspell
-    if (nextSign.type === "word") {
-      duration = videoUrl ? 3500 : 1200;
+    // Calculate duration: use the longest of avatar animation vs video
+    const avatarDuration = nextSign.type === "fingerspell" ? 600 : 1200;
+    let duration = avatarDuration;
+
+    if (videoUrl) {
+      const videoDuration = await getVideoDuration(videoUrl);
+      duration = Math.max(avatarDuration, videoDuration);
     }
 
     signTimeoutRef.current = setTimeout(() => {
@@ -116,31 +135,24 @@ export default function Interpreter() {
     recognition.interimResults = true;
     recognition.lang = language;
 
-    let lastProcessedLength = 0;
-
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interim = "";
-      let final = "";
+      let newFinal = "";
 
-      for (let i = 0; i < event.results.length; i++) {
+      // Only process results from resultIndex onward (new results)
+      for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         if (result.isFinal) {
-          final += result[0].transcript + " ";
+          newFinal += result[0].transcript + " ";
         } else {
           interim += result[0].transcript;
         }
       }
 
-      if (final) {
-        setTranscript(prev => prev + final);
+      if (newFinal) {
+        setTranscript(prev => prev + newFinal);
         setInterimText("");
-
-        // Only process the new part
-        const newText = final.slice(lastProcessedLength);
-        if (newText.trim()) {
-          processText(newText);
-        }
-        lastProcessedLength = 0; // Reset since final results accumulate differently
+        processText(newFinal.trim());
       }
 
       if (interim) {
@@ -206,6 +218,21 @@ export default function Interpreter() {
     setTextInput("");
   };
 
+  const stopAll = () => {
+    if (signTimeoutRef.current) clearTimeout(signTimeoutRef.current);
+    queueProcessingRef.current = false;
+    setSignQueue([]);
+    setCurrentSign({ type: "idle", label: "" });
+    setActiveVideo(null);
+    setTranscript("");
+    setInterimText("");
+    if (isListening && recognitionRef.current) {
+      isListeningRef.current = false;
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full min-h-screen">
       {/* Header */}
@@ -257,29 +284,53 @@ export default function Interpreter() {
             </div>
           )}
 
-          {/* Avatar + Reference Video side by side */}
-          <div className="flex-1 flex items-center justify-center w-full max-w-3xl gap-4">
-            {/* Avatar */}
-            <div className="flex-1 flex items-center justify-center max-w-sm">
+          {/* Avatar + Reference Video + Static Photo side by side */}
+          <div className="flex-1 flex items-center justify-center w-full max-w-5xl gap-4">
+            {/* 1. Avatar animation */}
+            <div className="flex-1 flex flex-col items-center max-w-xs">
+              <p className="text-xs text-zinc-500 mb-2">{activeVideo ? "Animation" : "\u00A0"}</p>
               <SignAvatar currentSign={currentSign} />
             </div>
 
-            {/* Reference video */}
+            {/* 2. Reference video */}
             {activeVideo && (
               <div className="flex-1 flex flex-col items-center max-w-xs sign-enter">
-                <p className="text-xs text-zinc-500 mb-2">Reference</p>
+                <p className="text-xs text-zinc-500 mb-2">Video</p>
                 <div className="rounded-xl overflow-hidden border border-white/10 bg-zinc-900 shadow-lg">
                   <video
                     key={activeVideo}
                     src={activeVideo}
                     autoPlay
-                    loop
                     muted
                     playsInline
                     className="w-full max-h-[280px] object-contain"
                   />
                 </div>
                 <p className="text-xs text-zinc-600 mt-1">spreadthesign.com</p>
+              </div>
+            )}
+
+            {/* 3. Static photo (mid-frame from video) */}
+            {activeVideo && (
+              <div className="flex-1 flex flex-col items-center max-w-xs sign-enter">
+                <p className="text-xs text-zinc-500 mb-2">Photo</p>
+                <div className="rounded-xl overflow-hidden border border-white/10 bg-zinc-900 shadow-lg">
+                  <video
+                    key={activeVideo + "-static"}
+                    src={activeVideo}
+                    muted
+                    playsInline
+                    className="w-full max-h-[280px] object-contain"
+                    ref={(el) => {
+                      if (el) {
+                        el.onloadedmetadata = () => {
+                          el.currentTime = el.duration * 0.45;
+                        };
+                      }
+                    }}
+                  />
+                </div>
+                <p className="text-xs text-zinc-600 mt-1">static frame</p>
               </div>
             )}
           </div>
@@ -296,6 +347,21 @@ export default function Interpreter() {
             </p>
           )}
         </div>
+
+        {/* Stop button */}
+        {(currentSign.type !== "idle" || activeVideo || isListening) && (
+          <div className="flex justify-center py-2">
+            <button
+              onClick={stopAll}
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-red-600 border border-zinc-700 hover:border-red-500 rounded-lg text-sm text-zinc-300 hover:text-white transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
+              </svg>
+              Stop
+            </button>
+          </div>
+        )}
 
         {/* Subtitle area */}
         <div className="px-5 py-3 min-h-[80px] border-t border-white/5">
