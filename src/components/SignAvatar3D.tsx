@@ -21,40 +21,50 @@ function LimbSegment({ start, end, radius, color }: {
   radius: number;
   color: string;
 }) {
-  const groupRef = useRef<THREE.Group>(null);
+  const cylRef = useRef<THREE.Mesh>(null);
+  const jointRef = useRef<THREE.Mesh>(null);
   const targetEnd = useMemo(() => new THREE.Vector3(...end), [end]);
   const currentEnd = useRef(new THREE.Vector3(...end));
+  const geomRef = useRef<THREE.CylinderGeometry | null>(null);
 
   useFrame(() => {
-    if (!groupRef.current) return;
+    if (!cylRef.current) return;
     currentEnd.current.lerp(targetEnd, 0.12);
 
     const s = new THREE.Vector3(...start);
     const e = currentEnd.current;
+    const mid = s.clone().add(e).multiplyScalar(0.5);
     const len = s.distanceTo(e);
-    const count = Math.max(3, Math.round(len / 0.05));
 
-    // Place spheres along the line from start to end
-    groupRef.current.children.forEach((child, i) => {
-      const t = i / (groupRef.current!.children.length - 1);
-      const pos = s.clone().lerp(e, t);
-      child.position.copy(pos);
-    });
+    // Position at midpoint
+    cylRef.current.position.copy(mid);
+
+    // Orient: rotate from Y-up to the direction vector
+    const dir = new THREE.Vector3().subVectors(e, s).normalize();
+    const quat = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0), dir
+    );
+    cylRef.current.quaternion.copy(quat);
+    cylRef.current.scale.set(1, len, 1);
+
+    // Joint sphere at the end
+    if (jointRef.current) {
+      jointRef.current.position.copy(e);
+    }
   });
 
-  // Create a chain of spheres
-  const spheres = [];
-  const count = 6;
-  for (let i = 0; i < count; i++) {
-    spheres.push(
-      <mesh key={i}>
-        <sphereGeometry args={[radius, 8, 8]} />
+  return (
+    <>
+      <mesh ref={cylRef}>
+        <cylinderGeometry args={[radius, radius, 1, 10]} />
         <meshStandardMaterial color={color} roughness={0.6} />
       </mesh>
-    );
-  }
-
-  return <group ref={groupRef}>{spheres}</group>;
+      <mesh ref={jointRef}>
+        <sphereGeometry args={[radius * 1.1, 8, 8]} />
+        <meshStandardMaterial color={color} roughness={0.6} />
+      </mesh>
+    </>
+  );
 }
 
 function FingerBone({ parentPos, angle, length, width, extended, dir }: {
@@ -321,18 +331,24 @@ function Avatar({ currentSign }: SignAvatarProps) {
       </mesh>
 
       {/* === ARMS === */}
-      {/* Left upper arm */}
-      <LimbSegment start={pos.lShoulder} end={pos.lElbow} radius={0.055} color="#2563eb" />
-      {/* Left forearm */}
-      <LimbSegment start={pos.lElbow} end={pos.lHand} radius={0.04} color="#d4a574" />
-      {/* Left hand */}
+      {/* Shoulder joints */}
+      <mesh position={pos.lShoulder}>
+        <sphereGeometry args={[0.06, 8, 8]} />
+        <meshStandardMaterial color="#2563eb" roughness={0.5} />
+      </mesh>
+      <mesh position={pos.rShoulder}>
+        <sphereGeometry args={[0.06, 8, 8]} />
+        <meshStandardMaterial color="#2563eb" roughness={0.5} />
+      </mesh>
+
+      {/* Left arm */}
+      <LimbSegment start={pos.lShoulder} end={pos.lElbow} radius={0.05} color="#2563eb" />
+      <LimbSegment start={pos.lElbow} end={pos.lHand} radius={0.038} color="#d4a574" />
       <Hand3D position={pos.lHand} fingers={pos.lFingers} rotation={pos.rotation} mirror={true} />
 
-      {/* Right upper arm */}
-      <LimbSegment start={pos.rShoulder} end={pos.rElbow} radius={0.055} color="#2563eb" />
-      {/* Right forearm */}
-      <LimbSegment start={pos.rElbow} end={pos.rHand} radius={0.04} color="#d4a574" />
-      {/* Right hand */}
+      {/* Right arm */}
+      <LimbSegment start={pos.rShoulder} end={pos.rElbow} radius={0.05} color="#2563eb" />
+      <LimbSegment start={pos.rElbow} end={pos.rHand} radius={0.038} color="#d4a574" />
       <Hand3D position={pos.rHand} fingers={pos.rFingers} rotation={pos.rotation} mirror={false} />
     </group>
   );
