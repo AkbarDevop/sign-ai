@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import SignAvatar from "./SignAvatar";
+import dynamic from "next/dynamic";
+const SignAvatar3D = dynamic(() => import("./SignAvatar3D"), { ssr: false });
 import { RSL_ALPHABET, RSL_COMMON_SIGNS, RSL_VIDEOS, textToGloss } from "@/lib/rsl-alphabet";
 import type { HandPose, WordSign } from "@/lib/rsl-alphabet";
 
@@ -126,7 +127,7 @@ export default function Interpreter() {
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setError("Speech recognition not supported. Use Chrome or Edge.");
+      setError("Распознавание речи не поддерживается. Используйте Chrome или Edge.");
       return;
     }
 
@@ -162,7 +163,7 @@ export default function Interpreter() {
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       if (event.error === "not-allowed") {
-        setError("Microphone access denied. Please allow microphone permission.");
+        setError("Доступ к микрофону запрещён. Разрешите доступ в настройках браузера.");
       } else if (event.error !== "no-speech") {
         console.error("Speech recognition error:", event.error);
       }
@@ -206,7 +207,7 @@ export default function Interpreter() {
         isListeningRef.current = true;
         setIsListening(true);
       } catch {
-        setError("Could not start speech recognition. Please try again.");
+        setError("Не удалось запустить распознавание речи. Попробуйте снова.");
       }
     }
   };
@@ -236,14 +237,14 @@ export default function Interpreter() {
   return (
     <div className="flex flex-col h-full min-h-screen">
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+      <header className="glass flex items-center justify-between px-6 py-3 sticky top-0 z-10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-sm">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/20">
             S
           </div>
           <div>
-            <h1 className="text-base font-semibold">SignAI</h1>
-            <p className="text-xs text-zinc-500">AI Sign Language Interpreter</p>
+            <h1 className="text-base font-semibold tracking-tight">SignAI</h1>
+            <p className="text-[11px] text-zinc-500">RSL Interpreter</p>
           </div>
         </div>
 
@@ -280,7 +281,7 @@ export default function Interpreter() {
           {isListening && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-red-500/20 px-3 py-1 rounded-full">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-xs text-red-400 font-medium">Listening...</span>
+              <span className="text-xs text-red-400 font-medium">Слушаю...</span>
             </div>
           )}
 
@@ -288,14 +289,14 @@ export default function Interpreter() {
           <div className="flex-1 flex items-center justify-center w-full max-w-5xl gap-4">
             {/* 1. Avatar animation */}
             <div className="flex-1 flex flex-col items-center max-w-xs">
-              <p className="text-xs text-zinc-500 mb-2">{activeVideo ? "Animation" : "\u00A0"}</p>
-              <SignAvatar currentSign={currentSign} />
+              <p className="text-xs text-zinc-500 mb-2">{activeVideo ? "3D Аватар" : "\u00A0"}</p>
+              <SignAvatar3D currentSign={currentSign} />
             </div>
 
             {/* 2. Reference video */}
             {activeVideo && (
               <div className="flex-1 flex flex-col items-center max-w-xs sign-enter">
-                <p className="text-xs text-zinc-500 mb-2">Video</p>
+                <p className="text-xs text-zinc-500 mb-2">Видео</p>
                 <div className="rounded-xl overflow-hidden border border-white/10 bg-zinc-900 shadow-lg">
                   <video
                     key={activeVideo}
@@ -313,7 +314,7 @@ export default function Interpreter() {
             {/* 3. Static photo (mid-frame from video) */}
             {activeVideo && (
               <div className="flex-1 flex flex-col items-center max-w-xs sign-enter">
-                <p className="text-xs text-zinc-500 mb-2">Photo</p>
+                <p className="text-xs text-zinc-500 mb-2">Фото</p>
                 <div className="rounded-xl overflow-hidden border border-white/10 bg-zinc-900 shadow-lg">
                   <video
                     key={activeVideo + "-static"}
@@ -330,7 +331,7 @@ export default function Interpreter() {
                     }}
                   />
                 </div>
-                <p className="text-xs text-zinc-600 mt-1">static frame</p>
+                <p className="text-xs text-zinc-600 mt-1">стоп-кадр</p>
               </div>
             )}
           </div>
@@ -367,7 +368,7 @@ export default function Interpreter() {
         <div className="px-5 py-3 min-h-[80px] border-t border-white/5">
           {(transcript || interimText) && (
             <div className="max-w-xl mx-auto">
-              <p className="text-sm text-zinc-400 mb-1">Subtitles</p>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Субтитры</p>
               <p className="text-base leading-relaxed subtitle-enter">
                 <span className="text-white">{transcript}</span>
                 {interimText && (
@@ -379,8 +380,8 @@ export default function Interpreter() {
           {!transcript && !interimText && !isListening && (
             <p className="text-sm text-zinc-600 text-center">
               {mode === "mic"
-                ? "Tap the microphone to start speaking"
-                : "Type text to translate to sign language"}
+                ? "Нажмите на микрофон чтобы начать"
+                : "Введите текст для перевода на жестовый язык"}
             </p>
           )}
         </div>
@@ -404,7 +405,7 @@ export default function Interpreter() {
                 mode === "mic" ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-white"
               }`}
             >
-              Microphone
+              Микрофон
             </button>
             <button
               onClick={() => setMode("text")}
@@ -412,7 +413,7 @@ export default function Interpreter() {
                 mode === "text" ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-white"
               }`}
             >
-              Text Input
+              Текст
             </button>
           </div>
 
@@ -460,14 +461,14 @@ export default function Interpreter() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleTextSubmit()}
-                placeholder="Type in Russian or Uzbek..."
+                placeholder="Введите текст на русском или узбекском..."
                 className="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
               />
               <button
                 onClick={handleTextSubmit}
                 className="bg-blue-600 hover:bg-blue-500 rounded-xl px-5 py-3 text-sm font-medium transition-colors"
               >
-                Translate
+                Перевести
               </button>
             </div>
           )}
@@ -475,9 +476,9 @@ export default function Interpreter() {
       </main>
 
       {/* Footer */}
-      <footer className="px-5 py-3 border-t border-white/5 text-center">
-        <p className="text-xs text-zinc-600">
-          SignAI MVP - AI-powered RSL interpreter
+      <footer className="px-5 py-2 border-t border-white/5 text-center">
+        <p className="text-[11px] text-zinc-600">
+          SignAI — AI-переводчик на русский жестовый язык
         </p>
       </footer>
     </div>
