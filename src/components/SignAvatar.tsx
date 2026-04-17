@@ -112,50 +112,68 @@ export default function SignAvatar({ currentSign }: SignAvatarProps) {
     const rot = mirror ? -rotation : rotation;
 
     if (extended === 0) {
+      // Fist — big visible circle
       return (
         <g transform={`rotate(${rot}, ${x}, ${y})`}>
-          <circle cx={x} cy={y} r={16} fill="#d4b896" stroke="#b89870" strokeWidth={1.5} />
-          <line x1={x - 6} y1={y - 2} x2={x - 6} y2={y + 2} stroke="#c4a070" strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={x} y1={y - 3} x2={x} y2={y + 3} stroke="#c4a070" strokeWidth={1.2} strokeLinecap="round" />
-          <line x1={x + 6} y1={y - 2} x2={x + 6} y2={y + 2} stroke="#c4a070" strokeWidth={1.2} strokeLinecap="round" />
+          <circle cx={x} cy={y} r={20} fill="#e8c9a0" stroke="#a08060" strokeWidth={2} />
+          <line x1={x - 8} y1={y - 3} x2={x - 8} y2={y + 3} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
+          <line x1={x - 2} y1={y - 4} x2={x - 2} y2={y + 4} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
+          <line x1={x + 4} y1={y - 3} x2={x + 4} y2={y + 3} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
+          <line x1={x + 10} y1={y - 2} x2={x + 10} y2={y + 2} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
         </g>
       );
     }
 
+    // Bigger, more visible fingers
     const fingerData = [
-      { spread: -60, len: 20, width: 5 },   // thumb
-      { spread: -25, len: 30, width: 4.5 },  // index
-      { spread: -5, len: 32, width: 4.5 },   // middle
-      { spread: 15, len: 28, width: 4 },     // ring
-      { spread: 33, len: 22, width: 3.5 },   // pinky
+      { spread: -65, len: 28, width: 7 },    // thumb — thick, shorter
+      { spread: -25, len: 40, width: 6.5 },   // index — longest visible
+      { spread: -4, len: 43, width: 6.5 },    // middle — longest
+      { spread: 17, len: 38, width: 6 },      // ring
+      { spread: 36, len: 30, width: 5.5 },    // pinky — shortest
     ];
 
     return (
       <g transform={`rotate(${rot}, ${x}, ${y})`}>
-        <ellipse cx={x} cy={y} rx={14} ry={16} fill="#d4b896" stroke="#b89870" strokeWidth={1.5} />
+        {/* Palm — bigger */}
+        <ellipse cx={x} cy={y} rx={18} ry={20} fill="#e8c9a0" stroke="#a08060" strokeWidth={2} />
         {fingers.map((f, i) => {
           const angle = (fingerData[i].spread * dir * Math.PI) / 180 - Math.PI / 2;
           if (f === 0) {
-            // Curled finger stub
+            // Curled finger — visible stub
+            const stubLen = 12;
             return (
               <line key={i}
-                x1={x + Math.cos(angle) * 8} y1={y + Math.sin(angle) * 8}
-                x2={x + Math.cos(angle) * 14} y2={y + Math.sin(angle) * 14}
-                stroke="#c4a882" strokeWidth={fingerData[i].width - 1.5} strokeLinecap="round" opacity={0.35}
+                x1={x + Math.cos(angle) * 10} y1={y + Math.sin(angle) * 10}
+                x2={x + Math.cos(angle) * (10 + stubLen)} y2={y + Math.sin(angle) * (10 + stubLen)}
+                stroke="#d4b896" strokeWidth={fingerData[i].width - 2} strokeLinecap="round" opacity={0.4}
               />
             );
           }
           const len = fingerData[i].len;
           const w = fingerData[i].width;
-          const midX = x + Math.cos(angle) * (len * 0.5);
-          const midY = y + Math.sin(angle) * (len * 0.5);
-          const endX = x + Math.cos(angle) * len;
-          const endY = y + Math.sin(angle) * len;
+          const seg1 = len * 0.45;
+          const seg2 = len;
+          const mid1X = x + Math.cos(angle) * seg1;
+          const mid1Y = y + Math.sin(angle) * seg1;
+          const endX = x + Math.cos(angle) * seg2;
+          const endY = y + Math.sin(angle) * seg2;
           return (
             <g key={i}>
-              <line x1={x} y1={y} x2={midX} y2={midY} stroke="#d4b896" strokeWidth={w} strokeLinecap="round" />
-              <line x1={midX} y1={midY} x2={endX} y2={endY} stroke="#dcc4a8" strokeWidth={w - 0.8} strokeLinecap="round" />
-              <circle cx={endX} cy={endY} r={w * 0.35} fill="#e4d0b8" />
+              {/* Base segment with outline */}
+              <line x1={x} y1={y} x2={mid1X} y2={mid1Y}
+                stroke="#a08060" strokeWidth={w + 2} strokeLinecap="round" />
+              <line x1={x} y1={y} x2={mid1X} y2={mid1Y}
+                stroke="#e8c9a0" strokeWidth={w} strokeLinecap="round" />
+              {/* Tip segment with outline */}
+              <line x1={mid1X} y1={mid1Y} x2={endX} y2={endY}
+                stroke="#a08060" strokeWidth={w - 0.5} strokeLinecap="round" />
+              <line x1={mid1X} y1={mid1Y} x2={endX} y2={endY}
+                stroke="#f0d8b8" strokeWidth={w - 2} strokeLinecap="round" />
+              {/* Fingertip dot */}
+              <circle cx={endX} cy={endY} r={w * 0.42} fill="#f0d8b8" stroke="#a08060" strokeWidth={1} />
+              {/* Joint */}
+              <circle cx={mid1X} cy={mid1Y} r={2} fill="#b89870" />
             </g>
           );
         })}

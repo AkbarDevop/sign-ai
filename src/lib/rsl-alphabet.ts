@@ -72,14 +72,14 @@ export interface WordSign {
 export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
   // Приветствия
   "здравствуйте": { gloss: "ЗДРАВСТВУЙТЕ", description: "Ладонь у лба, взмах вперёд", rightArmX: 0.45, rightArmY: 0.95, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "greeting" },
-  "привет": { gloss: "ПРИВЕТ", description: "Поднятая рука, помахать", rightArmX: 0.5, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 15, category: "greeting" },
-  "спасибо": { gloss: "СПАСИБО", description: "Ладонь от подбородка вперёд", rightArmX: 0.1, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -20, category: "greeting" },
+  "привет": { gloss: "ПРИВЕТ", description: "Поднятая рука, помахать", rightArmX: 0.55, rightArmY: 0.9, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 15, category: "greeting" },
+  "спасибо": { gloss: "СПАСИБО", description: "Ладонь от подбородка вперёд", rightArmX: 0.0, rightArmY: 0.82, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -15, category: "greeting" },
   "пожалуйста": { gloss: "ПОЖАЛУЙСТА", description: "Открытая ладонь, круговое движение", rightArmX: 0.2, rightArmY: 0.6, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "greeting" },
   "извините": { gloss: "ИЗВИНИТЕ", description: "Кулак кругом по груди", rightArmX: 0.05, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "greeting" },
   "до свидания": { gloss: "ДО СВИДАНИЯ", description: "Рука машет вперёд", rightArmX: 0.5, rightArmY: 0.8, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -10, category: "greeting" },
   // Ответы
-  "да": { gloss: "ДА", description: "Кулак кивает вперёд", rightArmX: 0.3, rightArmY: 0.7, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: -25, category: "response" },
-  "нет": { gloss: "НЕТ", description: "Ладонь качается из стороны в сторону", rightArmX: 0.35, rightArmY: 0.7, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "response" },
+  "да": { gloss: "ДА", description: "Кулак кивает вперёд", rightArmX: 0.25, rightArmY: 0.65, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: -30, category: "response" },
+  "нет": { gloss: "НЕТ", description: "Ладонь качается из стороны в сторону", rightArmX: 0.4, rightArmY: 0.7, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 15, category: "response" },
   // Базовые
   "помощь": { gloss: "ПОМОЩЬ", description: "Кулак на открытой ладони, поднять вверх", rightArmX: 0.1, rightArmY: 0.5, leftArmX: -0.1, leftArmY: 0.45, rightFingers: [0,0,0,0,0], leftFingers: [1,1,1,1,1], rotation: 0, category: "basic" },
   "понимаю": { gloss: "ПОНИМАЮ", description: "Указательный палец у виска, щелчок вверх", rightArmX: 0.35, rightArmY: 0.95, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
@@ -92,7 +92,7 @@ export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
   "знаю": { gloss: "ЗНАЮ", description: "Ладонь касается лба", rightArmX: 0.2, rightArmY: 0.95, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
   "не знаю": { gloss: "НЕ ЗНАЮ", description: "Рука отмахивается от лба", rightArmX: 0.45, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 20, category: "basic" },
   "люблю": { gloss: "ЛЮБЛЮ", description: "Руки скрещены на груди", rightArmX: 0.05, rightArmY: 0.5, leftArmX: -0.05, leftArmY: 0.5, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "basic" },
-  "дела": { gloss: "ДЕЛА", description: "Ладони вверх, развести в стороны", rightArmX: 0.35, rightArmY: 0.45, leftArmX: -0.35, leftArmY: 0.45, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "basic" },
+  "дела": { gloss: "ДЕЛА", description: "Ладони вверх, развести в стороны", rightArmX: 0.45, rightArmY: 0.5, leftArmX: -0.45, leftArmY: 0.5, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "basic" },
   "нормально": { gloss: "НОРМАЛЬНО", description: "Ладонь покачивается из стороны в сторону", rightArmX: 0.3, rightArmY: 0.55, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
   // Местоимения
   "я": { gloss: "Я", description: "Указательный палец на себя", rightArmX: 0.0, rightArmY: 0.45, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "pronoun" },
@@ -106,8 +106,8 @@ export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
   "почему": { gloss: "ПОЧЕМУ", description: "Палец от виска вперёд", rightArmX: 0.35, rightArmY: 0.9, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: -15, category: "question" },
   "кто": { gloss: "КТО", description: "Указательный палец крутится в воздухе", rightArmX: 0.3, rightArmY: 0.65, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,1,0,0,0], leftFingers: [0,0,0,0,0], rotation: 25, category: "question" },
   // Прилагательные
-  "хорошо": { gloss: "ХОРОШО", description: "Большой палец вверх", rightArmX: 0.35, rightArmY: 0.65, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
-  "плохо": { gloss: "ПЛОХО", description: "Большой палец вниз", rightArmX: 0.35, rightArmY: 0.45, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 180, category: "adjective" },
+  "хорошо": { gloss: "ХОРОШО", description: "Большой палец вверх", rightArmX: 0.35, rightArmY: 0.6, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
+  "плохо": { gloss: "ПЛОХО", description: "Большой палец вниз", rightArmX: 0.35, rightArmY: 0.4, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
   "большой": { gloss: "БОЛЬШОЙ", description: "Руки широко в стороны", rightArmX: 0.5, rightArmY: 0.55, leftArmX: -0.5, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "adjective" },
   "маленький": { gloss: "МАЛЕНЬКИЙ", description: "Ладони близко друг к другу", rightArmX: 0.08, rightArmY: 0.55, leftArmX: -0.08, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "adjective" },
   "красивый": { gloss: "КРАСИВЫЙ", description: "Ладонь обводит лицо", rightArmX: 0.2, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "adjective" },
@@ -126,9 +126,9 @@ export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
   "автобус": { gloss: "АВТОБУС", description: "Руки держат руль", rightArmX: 0.25, rightArmY: 0.55, leftArmX: -0.25, leftArmY: 0.55, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
   "вода": { gloss: "ВОДА", description: "Три пальца касаются подбородка", rightArmX: 0.1, rightArmY: 0.85, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
   "еда": { gloss: "ЕДА", description: "Пальцы ко рту", rightArmX: 0.08, rightArmY: 0.88, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -10, category: "noun" },
-  "мама": { gloss: "МАМА", description: "Ладонь гладит щёку вниз", rightArmX: 0.2, rightArmY: 0.75, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
-  "папа": { gloss: "ПАПА", description: "Кулак стучит по лбу сбоку", rightArmX: 0.3, rightArmY: 0.98, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
-  "друг": { gloss: "ДРУГ", description: "Указательные пальцы цепляются", rightArmX: 0.1, rightArmY: 0.55, leftArmX: -0.1, leftArmY: 0.55, rightFingers: [0,1,0,0,0], leftFingers: [0,1,0,0,0], rotation: 0, category: "noun" },
+  "мама": { gloss: "МАМА", description: "Ладонь гладит щёку вниз", rightArmX: 0.25, rightArmY: 0.72, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [1,1,1,1,1], leftFingers: [0,0,0,0,0], rotation: -10, category: "noun" },
+  "папа": { gloss: "ПАПА", description: "Кулак стучит по лбу сбоку", rightArmX: 0.25, rightArmY: 0.95, leftArmX: -0.2, leftArmY: 0.25, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
+  "друг": { gloss: "ДРУГ", description: "Указательные пальцы цепляются", rightArmX: 0.15, rightArmY: 0.55, leftArmX: -0.15, leftArmY: 0.55, rightFingers: [0,1,0,0,0], leftFingers: [0,1,0,0,0], rotation: 15, category: "noun" },
   "школа": { gloss: "ШКОЛА", description: "Хлопок ладонями дважды", rightArmX: 0.12, rightArmY: 0.55, leftArmX: -0.12, leftArmY: 0.55, rightFingers: [1,1,1,1,1], leftFingers: [1,1,1,1,1], rotation: 0, category: "noun" },
   "машина": { gloss: "МАШИНА", description: "Руки крутят руль", rightArmX: 0.18, rightArmY: 0.5, leftArmX: -0.18, leftArmY: 0.5, rightFingers: [0,0,0,0,0], leftFingers: [0,0,0,0,0], rotation: 20, category: "noun" },
   "телефон": { gloss: "ТЕЛЕФОН", description: "Рука-трубка у уха", rightArmX: 0.4, rightArmY: 0.9, leftArmX: -0.2, leftArmY: 0.3, rightFingers: [1,0,0,0,1], leftFingers: [0,0,0,0,0], rotation: 0, category: "noun" },
