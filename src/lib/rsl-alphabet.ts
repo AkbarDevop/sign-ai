@@ -294,27 +294,78 @@ export const RSL_COMMON_SIGNS: Record<string, WordSign> = {
 
 // Map words to video files in /signs/
 export const RSL_VIDEOS: Record<string, string> = {
+  // Приветствия
   "привет": "/signs/privet.mp4",
   "спасибо": "/signs/spasibo.mp4",
-  "да": "/signs/da.mp4",
-  "нет": "/signs/net.mp4",
-  "помощь": "/signs/pomosh.mp4",
   "пожалуйста": "/signs/pozhaluysta.mp4",
   "здравствуйте": "/signs/zdravstvuyte.mp4",
   "до свидания": "/signs/do_svidaniya.mp4",
-  "хорошо": "/signs/horosho.mp4",
-  "плохо": "/signs/ploho.mp4",
+  // Ответы
+  "да": "/signs/da.mp4",
+  "нет": "/signs/net.mp4",
+  "помощь": "/signs/pomosh.mp4",
+  // Местоимения
+  "я": "/signs/ya.mp4",
+  "вы": "/signs/vy.mp4",
+  // Вопросы
   "где": "/signs/gde.mp4",
   "когда": "/signs/kogda.mp4",
   "что": "/signs/chto.mp4",
   "как": "/signs/kak.mp4",
+  // Прилагательные
+  "хорошо": "/signs/horosho.mp4",
+  "плохо": "/signs/ploho.mp4",
+  "большой": "/signs/bolshoy.mp4",
+  "маленький": "/signs/malenkiy.mp4",
+  "красивый": "/signs/krasiviy.mp4",
+  // Семья
   "мама": "/signs/mama.mp4",
   "папа": "/signs/papa.mp4",
+  "друг": "/signs/drug.mp4",
+  "семья": "/signs/semya.mp4",
+  "брат": "/signs/brat.mp4",
+  "сестра": "/signs/sestra.mp4",
+  "ребёнок": "/signs/rebenok.mp4",
+  // Существительные
   "дом": "/signs/dom.mp4",
   "работа": "/signs/rabota.mp4",
   "вода": "/signs/voda.mp4",
   "еда": "/signs/eda.mp4",
-  "друг": "/signs/drug.mp4",
+  "школа": "/signs/shkola.mp4",
+  "машина": "/signs/mashina.mp4",
+  "телефон": "/signs/telefon.mp4",
+  "магазин": "/signs/magazin.mp4",
+  "деньги": "/signs/dengi.mp4",
+  "время": "/signs/vremya.mp4",
+  "врач": "/signs/vrach.mp4",
+  "больница": "/signs/bolnitsa.mp4",
+  "автобус": "/signs/avtobus.mp4",
+  "книга": "/signs/kniga.mp4",
+  "документ": "/signs/dokument.mp4",
+  "паспорт": "/signs/pasport.mp4",
+  "город": "/signs/gorod.mp4",
+  // Глаголы
+  "идти": "/signs/idti.mp4",
+  "думать": "/signs/dumat.mp4",
+  "есть": "/signs/est.mp4",
+  "пить": "/signs/pit.mp4",
+  "говорить": "/signs/govorit.mp4",
+  // Время
+  "утро": "/signs/utro.mp4",
+  "вечер": "/signs/vecher.mp4",
+  "ночь": "/signs/noch.mp4",
+  // Числа
+  "один": "/signs/odin.mp4",
+  "два": "/signs/dva.mp4",
+  "три": "/signs/tri.mp4",
+  "четыре": "/signs/chetyre.mp4",
+  "пять": "/signs/pyat.mp4",
+  // Цвета
+  "красный": "/signs/krasniy.mp4",
+  "синий": "/signs/siniy.mp4",
+  "зелёный": "/signs/zeleniy.mp4",
+  "белый": "/signs/beliy.mp4",
+  "чёрный": "/signs/cherniy.mp4",
 };
 
 // Simple Russian stemming — strip common endings to find dictionary base form
