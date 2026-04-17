@@ -106,77 +106,50 @@ export default function SignAvatar({ currentSign }: SignAvatarProps) {
 
   const pos = getPositions();
 
+  // Pre-drawn hand SVG shapes — looks like real hands, not sticks
   const renderHand = (x: number, y: number, fingers: number[], rotation: number, mirror: boolean) => {
-    const dir = mirror ? -1 : 1;
-    const extended = fingers.filter(f => f === 1).length;
     const rot = mirror ? -rotation : rotation;
+    const sx = mirror ? -1 : 1;
+    const key = fingers.join("");
+    const s = 1.1; // scale
 
-    if (extended === 0) {
-      // Fist — big visible circle
-      return (
-        <g transform={`rotate(${rot}, ${x}, ${y})`}>
-          <circle cx={x} cy={y} r={20} fill="#e8c9a0" stroke="#a08060" strokeWidth={2} />
-          <line x1={x - 8} y1={y - 3} x2={x - 8} y2={y + 3} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
-          <line x1={x - 2} y1={y - 4} x2={x - 2} y2={y + 4} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
-          <line x1={x + 4} y1={y - 3} x2={x + 4} y2={y + 3} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
-          <line x1={x + 10} y1={y - 2} x2={x + 10} y2={y + 2} stroke="#b89870" strokeWidth={2} strokeLinecap="round" />
-        </g>
-      );
-    }
-
-    // Bigger, more visible fingers
-    const fingerData = [
-      { spread: -65, len: 28, width: 7 },    // thumb — thick, shorter
-      { spread: -25, len: 40, width: 6.5 },   // index — longest visible
-      { spread: -4, len: 43, width: 6.5 },    // middle — longest
-      { spread: 17, len: 38, width: 6 },      // ring
-      { spread: 36, len: 30, width: 5.5 },    // pinky — shortest
-    ];
+    // Pick hand shape based on finger pattern
+    // Each path is drawn at origin (0,0), centered on wrist, pointing up
+    const getHandPath = (): string => {
+      switch (key) {
+        case "00000": // Fist
+          return `M${-12*sx},8 C${-14*sx},-2 ${-10*sx},-14 ${-4*sx},-16 C${2*sx},-18 ${10*sx},-14 ${14*sx},-6 C${16*sx},0 ${14*sx},10 ${10*sx},14 C${4*sx},18 ${-6*sx},18 ${-12*sx},8 Z`;
+        case "11111": // Open palm — all fingers spread
+          return `M${-4*sx},-2 L${-12*sx},-38 L${-8*sx},-38 L${-3*sx},-14 L${-5*sx},-42 L${-1*sx},-42 L${1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${5*sx},-14 L${6*sx},-40 L${10*sx},-40 L${8*sx},-12 L${12*sx},-32 L${15*sx},-30 L${10*sx},-6 C${14*sx},2 ${14*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "01000": // Index finger pointing
+          return `M${-4*sx},-2 C${-6*sx},-4 ${-4*sx},-10 ${-2*sx},-14 L${-1*sx},-44 L${3*sx},-44 L${3*sx},-14 C${6*sx},-10 ${10*sx},-8 ${12*sx},-2 C${14*sx},4 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "01100": // V sign — two fingers
+          return `M${-4*sx},-2 C${-6*sx},-4 ${-4*sx},-10 ${-3*sx},-14 L${-5*sx},-44 L${-1*sx},-44 L${0*sx},-14 L${3*sx},-44 L${7*sx},-44 L${5*sx},-14 C${8*sx},-8 ${12*sx},-4 ${12*sx},2 C${14*sx},8 ${12*sx},14 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "01110": // Three fingers
+          return `M${-4*sx},-2 L${-5*sx},-42 L${-1*sx},-42 L${-1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${4*sx},-14 L${7*sx},-40 L${11*sx},-40 L${7*sx},-10 C${12*sx},-4 ${14*sx},4 ${10*sx},14 C${6*sx},18 ${-4*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "01111": // Four fingers
+          return `M${-4*sx},-2 L${-6*sx},-38 L${-2*sx},-38 L${-2*sx},-14 L${-1*sx},-42 L${3*sx},-42 L${3*sx},-14 L${5*sx},-40 L${9*sx},-40 L${7*sx},-12 L${10*sx},-34 L${13*sx},-33 L${10*sx},-6 C${14*sx},2 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "10000": // Thumb up
+          return `M${-4*sx},-2 L${-14*sx},-28 L${-10*sx},-30 L${-4*sx},-10 C${0*sx},-14 ${6*sx},-12 ${10*sx},-8 C${14*sx},-2 ${14*sx},8 ${10*sx},14 C${4*sx},18 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "10001": // Y shape — phone
+          return `M${-4*sx},-2 L${-14*sx},-30 L${-10*sx},-32 L${-4*sx},-10 C${0*sx},-14 ${4*sx},-12 ${6*sx},-8 L${10*sx},-34 L${14*sx},-32 L${10*sx},-4 C${14*sx},4 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "11000": // Thumb + index
+          return `M${-4*sx},-2 L${-14*sx},-26 L${-10*sx},-28 L${-4*sx},-10 L${-1*sx},-44 L${3*sx},-44 L${3*sx},-12 C${8*sx},-8 ${12*sx},-2 ${12*sx},6 C${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "11100": // Thumb + index + middle
+          return `M${-4*sx},-2 L${-14*sx},-26 L${-10*sx},-28 L${-4*sx},-10 L${-3*sx},-42 L${1*sx},-42 L${1*sx},-14 L${3*sx},-44 L${7*sx},-44 L${5*sx},-12 C${10*sx},-6 ${14*sx},2 ${10*sx},14 C${6*sx},18 ${-4*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        case "00100": // Middle finger only (rare but possible)
+          return `M${-4*sx},-2 C${-6*sx},-6 ${-2*sx},-12 ${0*sx},-14 L${1*sx},-44 L${5*sx},-44 L${4*sx},-14 C${8*sx},-10 ${12*sx},-4 ${12*sx},4 C${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+        default: // Fallback — use open palm for any other combo
+          return `M${-4*sx},-2 L${-12*sx},-38 L${-8*sx},-38 L${-3*sx},-14 L${-5*sx},-42 L${-1*sx},-42 L${1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${5*sx},-14 L${6*sx},-40 L${10*sx},-40 L${8*sx},-12 L${12*sx},-32 L${15*sx},-30 L${10*sx},-6 C${14*sx},2 ${14*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
+      }
+    };
 
     return (
-      <g transform={`rotate(${rot}, ${x}, ${y})`}>
-        {/* Palm — bigger */}
-        <ellipse cx={x} cy={y} rx={18} ry={20} fill="#e8c9a0" stroke="#a08060" strokeWidth={2} />
-        {fingers.map((f, i) => {
-          const angle = (fingerData[i].spread * dir * Math.PI) / 180 - Math.PI / 2;
-          if (f === 0) {
-            // Curled finger — visible stub
-            const stubLen = 12;
-            return (
-              <line key={i}
-                x1={x + Math.cos(angle) * 10} y1={y + Math.sin(angle) * 10}
-                x2={x + Math.cos(angle) * (10 + stubLen)} y2={y + Math.sin(angle) * (10 + stubLen)}
-                stroke="#d4b896" strokeWidth={fingerData[i].width - 2} strokeLinecap="round" opacity={0.4}
-              />
-            );
-          }
-          const len = fingerData[i].len;
-          const w = fingerData[i].width;
-          const seg1 = len * 0.45;
-          const seg2 = len;
-          const mid1X = x + Math.cos(angle) * seg1;
-          const mid1Y = y + Math.sin(angle) * seg1;
-          const endX = x + Math.cos(angle) * seg2;
-          const endY = y + Math.sin(angle) * seg2;
-          return (
-            <g key={i}>
-              {/* Base segment with outline */}
-              <line x1={x} y1={y} x2={mid1X} y2={mid1Y}
-                stroke="#a08060" strokeWidth={w + 2} strokeLinecap="round" />
-              <line x1={x} y1={y} x2={mid1X} y2={mid1Y}
-                stroke="#e8c9a0" strokeWidth={w} strokeLinecap="round" />
-              {/* Tip segment with outline */}
-              <line x1={mid1X} y1={mid1Y} x2={endX} y2={endY}
-                stroke="#a08060" strokeWidth={w - 0.5} strokeLinecap="round" />
-              <line x1={mid1X} y1={mid1Y} x2={endX} y2={endY}
-                stroke="#f0d8b8" strokeWidth={w - 2} strokeLinecap="round" />
-              {/* Fingertip dot */}
-              <circle cx={endX} cy={endY} r={w * 0.42} fill="#f0d8b8" stroke="#a08060" strokeWidth={1} />
-              {/* Joint */}
-              <circle cx={mid1X} cy={mid1Y} r={2} fill="#b89870" />
-            </g>
-          );
-        })}
+      <g transform={`translate(${x},${y}) rotate(${rot}) scale(${s})`}>
+        {/* Shadow */}
+        <path d={getHandPath()} fill="rgba(0,0,0,0.1)" transform="translate(2,2)" />
+        {/* Hand shape */}
+        <path d={getHandPath()} fill="#e8c9a0" stroke="#a08060" strokeWidth={1.8} strokeLinejoin="round" />
       </g>
     );
   };
