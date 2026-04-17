@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-const SignAvatar3D = dynamic(() => import("./SignAvatar3D"), { ssr: false });
+import SignAvatar from "./SignAvatar";
 import { RSL_ALPHABET, RSL_COMMON_SIGNS, RSL_VIDEOS, textToGloss } from "@/lib/rsl-alphabet";
 import type { HandPose, WordSign } from "@/lib/rsl-alphabet";
 
@@ -290,7 +289,7 @@ export default function Interpreter() {
             {/* 1. Avatar animation */}
             <div className="flex-1 flex flex-col items-center max-w-xs">
               <p className="text-xs text-zinc-500 mb-2">{activeVideo ? "3D Аватар" : "\u00A0"}</p>
-              <SignAvatar3D currentSign={currentSign} />
+              <SignAvatar currentSign={currentSign} />
             </div>
 
             {/* 2. Reference video */}
