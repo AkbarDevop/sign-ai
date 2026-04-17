@@ -187,11 +187,21 @@ function Avatar({ currentSign }: SignAvatarProps) {
       };
     }
 
+    // Map dictionary coords to 3D space
+    // armX: -0.5..0.5 → x: -0.4..0.4 (wide range)
+    // armY: 0..1 → y: -0.15..0.85 (bottom of torso to top of head)
+    const mapX = (v: number) => v * 0.8;
+    const mapY = (v: number) => v * 1.0 - 0.15;
+
     if (currentSign.type === "fingerspell" && currentSign.pose) {
       const p = currentSign.pose;
+      const hx = mapX(p.armX);
+      const hy = mapY(p.armY);
+      const elbowX = (hx + 0.22) / 2;
+      const elbowY = (hy + 0.45) / 2;
       return {
-        rElbow: [0.28, 0.3, 0.15] as [number, number, number],
-        rHand: [p.armX * 0.5 + mo, p.armY * 0.7 - 0.05 + mo * 0.5, 0.25] as [number, number, number],
+        rElbow: [elbowX, elbowY, 0.15] as [number, number, number],
+        rHand: [hx + mo, hy + mo * 0.5, 0.25] as [number, number, number],
         lElbow: [-0.3, 0.15, 0.12] as [number, number, number],
         lHand: [-0.25, -0.1, 0.18] as [number, number, number],
         rFingers: [p.thumb, p.index, p.middle, p.ring, p.pinky],
@@ -202,10 +212,10 @@ function Avatar({ currentSign }: SignAvatarProps) {
 
     if (currentSign.type === "word" && currentSign.wordSign) {
       const ws = currentSign.wordSign;
-      const rx = ws.rightArmX * 0.5;
-      const ry = ws.rightArmY * 0.7 - 0.05;
-      const lx = ws.leftArmX * 0.5;
-      const ly = ws.leftArmY * 0.7 - 0.05;
+      const rx = mapX(ws.rightArmX);
+      const ry = mapY(ws.rightArmY);
+      const lx = mapX(ws.leftArmX);
+      const ly = mapY(ws.leftArmY);
       return {
         rElbow: [(rx + 0.22) / 2, (ry + 0.45) / 2, 0.15] as [number, number, number],
         rHand: [rx + mo, ry + mo * 0.5, 0.25] as [number, number, number],
