@@ -21,34 +21,40 @@ function LimbSegment({ start, end, radius, color }: {
   radius: number;
   color: string;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const targetEnd = useMemo(() => new THREE.Vector3(...end), [end]);
   const currentEnd = useRef(new THREE.Vector3(...end));
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({ color, roughness: 0.6 }), [color]);
 
   useFrame(() => {
-    if (!meshRef.current) return;
+    if (!groupRef.current) return;
     currentEnd.current.lerp(targetEnd, 0.12);
+
     const s = new THREE.Vector3(...start);
     const e = currentEnd.current;
-    const mid = s.clone().add(e).multiplyScalar(0.5);
     const len = s.distanceTo(e);
+    const count = Math.max(3, Math.round(len / 0.05));
 
-    meshRef.current.position.copy(mid);
-    // Orient cylinder from start to end
-    const direction = new THREE.Vector3().subVectors(e, s).normalize();
-    const quaternion = new THREE.Quaternion().setFromUnitVectors(
-      new THREE.Vector3(0, 1, 0), direction
-    );
-    meshRef.current.quaternion.copy(quaternion);
-    meshRef.current.scale.set(1, Math.max(len, 0.01), 1);
+    // Place spheres along the line from start to end
+    groupRef.current.children.forEach((child, i) => {
+      const t = i / (groupRef.current!.children.length - 1);
+      const pos = s.clone().lerp(e, t);
+      child.position.copy(pos);
+    });
   });
 
-  return (
-    <mesh ref={meshRef} material={mat}>
-      <capsuleGeometry args={[radius, 1, 8, 12]} />
-    </mesh>
-  );
+  // Create a chain of spheres
+  const spheres = [];
+  const count = 6;
+  for (let i = 0; i < count; i++) {
+    spheres.push(
+      <mesh key={i}>
+        <sphereGeometry args={[radius, 8, 8]} />
+        <meshStandardMaterial color={color} roughness={0.6} />
+      </mesh>
+    );
+  }
+
+  return <group ref={groupRef}>{spheres}</group>;
 }
 
 function FingerBone({ parentPos, angle, length, width, extended, dir }: {
@@ -238,70 +244,80 @@ function Avatar({ currentSign }: SignAvatarProps) {
       </mesh>
 
       {/* === HEAD === */}
-      <mesh position={[0, 0.7, 0]}>
-        <sphereGeometry args={[0.14, 20, 20]} />
+      <mesh position={[0, 0.73, 0]}>
+        <sphereGeometry args={[0.16, 20, 20]} />
         <meshStandardMaterial color="#d4a574" roughness={0.6} />
       </mesh>
       {/* Jaw */}
-      <mesh position={[0, 0.63, 0.04]}>
-        <sphereGeometry args={[0.1, 12, 12]} />
+      <mesh position={[0, 0.65, 0.05]}>
+        <sphereGeometry args={[0.12, 12, 12]} />
         <meshStandardMaterial color="#d4a574" roughness={0.6} />
       </mesh>
 
-      {/* Hair */}
-      <mesh position={[0, 0.78, -0.01]}>
-        <sphereGeometry args={[0.135, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
+      {/* Hair top */}
+      <mesh position={[0, 0.82, -0.01]}>
+        <sphereGeometry args={[0.155, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
         <meshStandardMaterial color="#2a1a0e" roughness={0.9} />
       </mesh>
       {/* Hair sides */}
-      <mesh position={[-0.12, 0.72, -0.02]}>
-        <sphereGeometry args={[0.05, 8, 8]} />
+      <mesh position={[-0.14, 0.74, -0.03]}>
+        <sphereGeometry args={[0.06, 8, 8]} />
         <meshStandardMaterial color="#2a1a0e" roughness={0.9} />
       </mesh>
-      <mesh position={[0.12, 0.72, -0.02]}>
-        <sphereGeometry args={[0.05, 8, 8]} />
+      <mesh position={[0.14, 0.74, -0.03]}>
+        <sphereGeometry args={[0.06, 8, 8]} />
         <meshStandardMaterial color="#2a1a0e" roughness={0.9} />
       </mesh>
 
       {/* Eyes — whites */}
-      <mesh position={[-0.045, 0.72, 0.12]}>
-        <sphereGeometry args={[0.025, 10, 10]} />
+      <mesh position={[-0.05, 0.74, 0.14]}>
+        <sphereGeometry args={[0.028, 10, 10]} />
         <meshStandardMaterial color="white" />
       </mesh>
-      <mesh position={[0.045, 0.72, 0.12]}>
-        <sphereGeometry args={[0.025, 10, 10]} />
+      <mesh position={[0.05, 0.74, 0.14]}>
+        <sphereGeometry args={[0.028, 10, 10]} />
         <meshStandardMaterial color="white" />
       </mesh>
       {/* Pupils */}
-      <mesh position={[-0.045, 0.72, 0.14]}>
-        <sphereGeometry args={[0.014, 8, 8]} />
+      <mesh position={[-0.05, 0.74, 0.165]}>
+        <sphereGeometry args={[0.016, 8, 8]} />
         <meshStandardMaterial color="#1a1a2e" />
       </mesh>
-      <mesh position={[0.045, 0.72, 0.14]}>
-        <sphereGeometry args={[0.014, 8, 8]} />
+      <mesh position={[0.05, 0.74, 0.165]}>
+        <sphereGeometry args={[0.016, 8, 8]} />
         <meshStandardMaterial color="#1a1a2e" />
       </mesh>
 
       {/* Eyebrows */}
-      <mesh position={[-0.045, 0.76, 0.12]} rotation={[0, 0, 0.15]}>
-        <boxGeometry args={[0.04, 0.008, 0.01]} />
+      <mesh position={[-0.05, 0.785, 0.13]} rotation={[0, 0, 0.12]}>
+        <boxGeometry args={[0.045, 0.01, 0.012]} />
         <meshStandardMaterial color="#2a1a0e" />
       </mesh>
-      <mesh position={[0.045, 0.76, 0.12]} rotation={[0, 0, -0.15]}>
-        <boxGeometry args={[0.04, 0.008, 0.01]} />
+      <mesh position={[0.05, 0.785, 0.13]} rotation={[0, 0, -0.12]}>
+        <boxGeometry args={[0.045, 0.01, 0.012]} />
         <meshStandardMaterial color="#2a1a0e" />
       </mesh>
 
       {/* Nose */}
-      <mesh position={[0, 0.68, 0.13]}>
-        <sphereGeometry args={[0.015, 8, 8]} />
+      <mesh position={[0, 0.7, 0.15]}>
+        <sphereGeometry args={[0.018, 8, 8]} />
         <meshStandardMaterial color="#c4956a" roughness={0.7} />
       </mesh>
 
       {/* Mouth */}
-      <mesh position={[0, 0.63, 0.12]} scale={currentSign.type !== "idle" ? [1.2, 1.4, 1] : [1, 0.6, 1]}>
-        <sphereGeometry args={[0.018, 8, 8]} />
+      <mesh position={[0, 0.645, 0.14]} scale={currentSign.type !== "idle" ? [1.2, 1.4, 1] : [1, 0.6, 1]}>
+        <sphereGeometry args={[0.02, 8, 8]} />
         <meshStandardMaterial color="#a06050" />
+      </mesh>
+
+      {/* Ears */}
+      <mesh position={[-0.155, 0.72, 0]}>
+        <sphereGeometry args={[0.03, 8, 8]} />
+        <meshStandardMaterial color="#c4956a" roughness={0.7} />
+      </mesh>
+      <mesh position={[0.155, 0.72, 0]}>
+        <sphereGeometry args={[0.03, 8, 8]} />
+        <meshStandardMaterial color="#c4956a" roughness={0.7} />
       </mesh>
 
       {/* === ARMS === */}
@@ -326,7 +342,7 @@ export default function SignAvatar3D({ currentSign }: SignAvatarProps) {
   return (
     <div className="relative w-full max-w-[350px] mx-auto" style={{ height: "400px" }}>
       <Canvas
-        camera={{ position: [0, 0.35, 2], fov: 32 }}
+        camera={{ position: [0, 0.5, 2.5], fov: 30 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
