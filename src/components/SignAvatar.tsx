@@ -14,229 +14,255 @@ interface SignAvatarProps {
 }
 
 export default function SignAvatar({ currentSign }: SignAvatarProps) {
-  const [animPhase, setAnimPhase] = useState(0);
+  const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimPhase(p => (p + 1) % 120);
-    }, 40);
-    return () => clearInterval(interval);
+    const id = setInterval(() => setPhase(p => (p + 1) % 200), 35);
+    return () => clearInterval(id);
   }, []);
 
-  const BODY_CX = 200;
-  const R_SHOULDER_X = 238;
-  const L_SHOULDER_X = 162;
-  const SHOULDER_Y = 195;
+  const breath = Math.sin(phase * 0.06) * 1.2;
+  const isActive = currentSign.type !== "idle";
+  // Gentle movement when showing a sign
+  const signMove = isActive ? Math.sin(phase * 0.08) * 4 : 0;
 
-  // Map dictionary coords to SVG space
-  const mapHand = (armX: number, armY: number) => {
-    const handX = BODY_CX + armX * 220;
-    const handY = 380 - armY * 340;
-    return { handX, handY };
-  };
+  // --- Position mapping ---
+  const mapHand = (ax: number, ay: number) => ({
+    x: 200 + ax * 230,
+    y: 390 - ay * 360,
+  });
 
-  // Natural elbow: goes outward and stays lower than hand when hand is raised
-  const calcElbow = (shoulderX: number, handX: number, handY: number, isRight: boolean) => {
-    const side = isRight ? 1 : -1;
-    const dx = handX - shoulderX;
-    const dy = handY - SHOULDER_Y;
-    // Elbow goes outward from body and sits between shoulder and hand height
-    const elbowX = shoulderX + dx * 0.4 + side * 25;
-    const elbowY = SHOULDER_Y + dy * 0.5 + 15;
-    return { elbowX, elbowY };
-  };
-
-  const getPositions = () => {
-    const breath = Math.sin(animPhase * 0.08) * 1.5;
-
-    if (currentSign.type === "idle") {
-      return {
-        rElbowX: 272, rElbowY: 260 + breath,
-        rHandX: 260, rHandY: 340 + breath,
-        lElbowX: 128, lElbowY: 260 + breath,
-        lHandX: 140, lHandY: 340 + breath,
-        rFingers: [0,0,0,0,0] as number[],
-        lFingers: [0,0,0,0,0] as number[],
-        rotation: 0,
-      };
-    }
-
-    if (currentSign.type === "fingerspell" && currentSign.pose) {
-      const p = currentSign.pose;
-      const { handX, handY } = mapHand(p.armX, p.armY);
-      const elbow = calcElbow(R_SHOULDER_X, handX, handY, true);
-      return {
-        rElbowX: elbow.elbowX, rElbowY: elbow.elbowY,
-        rHandX: handX, rHandY: handY,
-        lElbowX: 128, lElbowY: 260,
-        lHandX: 140, lHandY: 340,
-        rFingers: [p.thumb, p.index, p.middle, p.ring, p.pinky],
-        lFingers: [0,0,0,0,0] as number[],
-        rotation: p.rotation,
-      };
-    }
-
-    if (currentSign.type === "word" && currentSign.wordSign) {
-      const ws = currentSign.wordSign;
-      const r = mapHand(ws.rightArmX, ws.rightArmY);
-      const l = mapHand(ws.leftArmX, ws.leftArmY);
-      const rElbow = calcElbow(R_SHOULDER_X, r.handX, r.handY, true);
-      const lElbow = calcElbow(L_SHOULDER_X, l.handX, l.handY, false);
-      return {
-        rElbowX: rElbow.elbowX, rElbowY: rElbow.elbowY,
-        rHandX: r.handX, rHandY: r.handY,
-        lElbowX: lElbow.elbowX, lElbowY: lElbow.elbowY,
-        lHandX: l.handX, lHandY: l.handY,
-        rFingers: ws.rightFingers,
-        lFingers: ws.leftFingers,
-        rotation: ws.rotation,
-      };
-    }
-
+  const calcElbow = (sx: number, hx: number, hy: number, right: boolean) => {
+    const side = right ? 1 : -1;
     return {
-      rElbowX: 272, rElbowY: 260,
-      rHandX: 260, rHandY: 340,
-      lElbowX: 128, lElbowY: 260,
-      lHandX: 140, lHandY: 340,
-      rFingers: [0,0,0,0,0] as number[],
-      lFingers: [0,0,0,0,0] as number[],
-      rotation: 0,
+      x: sx + (hx - sx) * 0.4 + side * 28,
+      y: 195 + (hy - 195) * 0.45 + 20,
     };
   };
 
-  const pos = getPositions();
+  let rHand = { x: 265, y: 345 + breath };
+  let lHand = { x: 135, y: 345 + breath };
+  let rFingers = [0,0,0,0,0];
+  let lFingers = [0,0,0,0,0];
+  let rot = 0;
 
-  // Pre-drawn hand SVG shapes — looks like real hands, not sticks
-  const renderHand = (x: number, y: number, fingers: number[], rotation: number, mirror: boolean) => {
-    const rot = mirror ? -rotation : rotation;
-    const sx = mirror ? -1 : 1;
+  if (currentSign.type === "fingerspell" && currentSign.pose) {
+    const p = currentSign.pose;
+    rHand = mapHand(p.armX, p.armY);
+    rHand.x += signMove;
+    rHand.y += signMove * 0.5;
+    rFingers = [p.thumb, p.index, p.middle, p.ring, p.pinky];
+    rot = p.rotation;
+  } else if (currentSign.type === "word" && currentSign.wordSign) {
+    const ws = currentSign.wordSign;
+    rHand = mapHand(ws.rightArmX, ws.rightArmY);
+    lHand = mapHand(ws.leftArmX, ws.leftArmY);
+    rHand.x += signMove; rHand.y += signMove * 0.4;
+    lHand.x -= signMove; lHand.y += signMove * 0.4;
+    rFingers = ws.rightFingers;
+    lFingers = ws.leftFingers;
+    rot = ws.rotation;
+  }
+
+  const rElbow = calcElbow(238, rHand.x, rHand.y, true);
+  const lElbow = calcElbow(162, lHand.x, lHand.y, false);
+
+  // --- Hand rendering ---
+  const renderHand = (hx: number, hy: number, fingers: number[], rotation: number, mirror: boolean) => {
+    const r = mirror ? -rotation : rotation;
+    const sc = mirror ? -1.5 : 1.5; // scale — BIG hands
     const key = fingers.join("");
-    const s = 1.1; // scale
 
-    // Pick hand shape based on finger pattern
-    // Each path is drawn at origin (0,0), centered on wrist, pointing up
-    const getHandPath = (): string => {
-      switch (key) {
-        case "00000": // Fist
-          return `M${-12*sx},8 C${-14*sx},-2 ${-10*sx},-14 ${-4*sx},-16 C${2*sx},-18 ${10*sx},-14 ${14*sx},-6 C${16*sx},0 ${14*sx},10 ${10*sx},14 C${4*sx},18 ${-6*sx},18 ${-12*sx},8 Z`;
-        case "11111": // Open palm — all fingers spread
-          return `M${-4*sx},-2 L${-12*sx},-38 L${-8*sx},-38 L${-3*sx},-14 L${-5*sx},-42 L${-1*sx},-42 L${1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${5*sx},-14 L${6*sx},-40 L${10*sx},-40 L${8*sx},-12 L${12*sx},-32 L${15*sx},-30 L${10*sx},-6 C${14*sx},2 ${14*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "01000": // Index finger pointing
-          return `M${-4*sx},-2 C${-6*sx},-4 ${-4*sx},-10 ${-2*sx},-14 L${-1*sx},-44 L${3*sx},-44 L${3*sx},-14 C${6*sx},-10 ${10*sx},-8 ${12*sx},-2 C${14*sx},4 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "01100": // V sign — two fingers
-          return `M${-4*sx},-2 C${-6*sx},-4 ${-4*sx},-10 ${-3*sx},-14 L${-5*sx},-44 L${-1*sx},-44 L${0*sx},-14 L${3*sx},-44 L${7*sx},-44 L${5*sx},-14 C${8*sx},-8 ${12*sx},-4 ${12*sx},2 C${14*sx},8 ${12*sx},14 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "01110": // Three fingers
-          return `M${-4*sx},-2 L${-5*sx},-42 L${-1*sx},-42 L${-1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${4*sx},-14 L${7*sx},-40 L${11*sx},-40 L${7*sx},-10 C${12*sx},-4 ${14*sx},4 ${10*sx},14 C${6*sx},18 ${-4*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "01111": // Four fingers
-          return `M${-4*sx},-2 L${-6*sx},-38 L${-2*sx},-38 L${-2*sx},-14 L${-1*sx},-42 L${3*sx},-42 L${3*sx},-14 L${5*sx},-40 L${9*sx},-40 L${7*sx},-12 L${10*sx},-34 L${13*sx},-33 L${10*sx},-6 C${14*sx},2 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "10000": // Thumb up
-          return `M${-4*sx},-2 L${-14*sx},-28 L${-10*sx},-30 L${-4*sx},-10 C${0*sx},-14 ${6*sx},-12 ${10*sx},-8 C${14*sx},-2 ${14*sx},8 ${10*sx},14 C${4*sx},18 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "10001": // Y shape — phone
-          return `M${-4*sx},-2 L${-14*sx},-30 L${-10*sx},-32 L${-4*sx},-10 C${0*sx},-14 ${4*sx},-12 ${6*sx},-8 L${10*sx},-34 L${14*sx},-32 L${10*sx},-4 C${14*sx},4 ${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "11000": // Thumb + index
-          return `M${-4*sx},-2 L${-14*sx},-26 L${-10*sx},-28 L${-4*sx},-10 L${-1*sx},-44 L${3*sx},-44 L${3*sx},-12 C${8*sx},-8 ${12*sx},-2 ${12*sx},6 C${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "11100": // Thumb + index + middle
-          return `M${-4*sx},-2 L${-14*sx},-26 L${-10*sx},-28 L${-4*sx},-10 L${-3*sx},-42 L${1*sx},-42 L${1*sx},-14 L${3*sx},-44 L${7*sx},-44 L${5*sx},-12 C${10*sx},-6 ${14*sx},2 ${10*sx},14 C${6*sx},18 ${-4*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        case "00100": // Middle finger only (rare but possible)
-          return `M${-4*sx},-2 C${-6*sx},-6 ${-2*sx},-12 ${0*sx},-14 L${1*sx},-44 L${5*sx},-44 L${4*sx},-14 C${8*sx},-10 ${12*sx},-4 ${12*sx},4 C${12*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-        default: // Fallback — use open palm for any other combo
-          return `M${-4*sx},-2 L${-12*sx},-38 L${-8*sx},-38 L${-3*sx},-14 L${-5*sx},-42 L${-1*sx},-42 L${1*sx},-14 L${1*sx},-44 L${5*sx},-44 L${5*sx},-14 L${6*sx},-40 L${10*sx},-40 L${8*sx},-12 L${12*sx},-32 L${15*sx},-30 L${10*sx},-6 C${14*sx},2 ${14*sx},12 ${8*sx},16 C${2*sx},20 ${-6*sx},18 ${-12*sx},10 C${-14*sx},4 ${-10*sx},-2 ${-4*sx},-2 Z`;
-      }
+    // Finger as a nice curved shape
+    const finger = (bx: number, by: number, tipX: number, tipY: number, w: number) => {
+      // Curved finger with rounded tip
+      const mx = (bx + tipX) / 2 + (tipY - by) * 0.08;
+      const my = (by + tipY) / 2;
+      return `M${bx - w},${by} Q${mx - w},${my} ${tipX - w * 0.7},${tipY}
+              A${w * 0.7},${w * 0.7} 0 1 0 ${tipX + w * 0.7},${tipY}
+              Q${mx + w},${my} ${bx + w},${by}`;
     };
+
+    const getShape = () => {
+      const parts: string[] = [];
+
+      // Palm base — always present, rounded rectangle shape
+      parts.push(`M-10,12 C-13,6 -13,-4 -10,-10 C-6,-14 6,-14 10,-10 C13,-4 13,6 10,12 C6,16 -6,16 -10,12 Z`);
+
+      // Thumb
+      if (fingers[0]) {
+        parts.push(finger(-12, -2, -22, -18, 3.5));
+      } else {
+        parts.push(`M-12,-2 Q-15,-6 -14,-10 Q-13,-12 -11,-10 Q-10,-6 -10,-2`);
+      }
+
+      // Index
+      if (fingers[1]) {
+        parts.push(finger(-6, -12, -8, -38, 3));
+      } else {
+        parts.push(`M-6,-12 Q-7,-16 -5,-18 Q-3,-18 -3,-14`);
+      }
+
+      // Middle
+      if (fingers[2]) {
+        parts.push(finger(-1, -13, -1, -40, 3));
+      } else {
+        parts.push(`M-1,-13 Q-1,-17 0,-19 Q2,-19 2,-15`);
+      }
+
+      // Ring
+      if (fingers[3]) {
+        parts.push(finger(4, -12, 5, -37, 2.8));
+      } else {
+        parts.push(`M4,-12 Q5,-16 6,-18 Q8,-17 6,-14`);
+      }
+
+      // Pinky
+      if (fingers[4]) {
+        parts.push(finger(8, -10, 11, -32, 2.5));
+      } else {
+        parts.push(`M8,-10 Q10,-13 11,-15 Q12,-14 10,-10`);
+      }
+
+      return parts;
+    };
+
+    const parts = getShape();
 
     return (
-      <g transform={`translate(${x},${y}) rotate(${rot}) scale(${s})`}>
+      <g transform={`translate(${hx},${hy}) rotate(${r}) scale(${sc},${Math.abs(sc)})`}
+         style={{ transition: "transform 0.45s cubic-bezier(0.33,0,0.2,1)" }}>
         {/* Shadow */}
-        <path d={getHandPath()} fill="rgba(0,0,0,0.1)" transform="translate(2,2)" />
-        {/* Hand shape */}
-        <path d={getHandPath()} fill="#e8c9a0" stroke="#a08060" strokeWidth={1.8} strokeLinejoin="round" />
+        <g transform="translate(1.5,1.5)" opacity={0.15}>
+          {parts.map((d, i) => <path key={`s${i}`} d={d} fill="#000" />)}
+        </g>
+        {/* Hand fill */}
+        {parts.map((d, i) => (
+          <path key={`f${i}`} d={d} fill={i === 0 ? "#e8c9a0" : "#f0d4b0"}
+            stroke="#a08060" strokeWidth={0.8} strokeLinejoin="round" />
+        ))}
+        {/* Palm lines for fist */}
+        {key === "00000" && (
+          <g stroke="#c4a882" strokeWidth={0.6} opacity={0.5}>
+            <path d="M-6,-4 Q0,-8 6,-4" fill="none" />
+            <path d="M-5,0 Q0,-3 5,0" fill="none" />
+            <path d="M-4,4 Q0,2 4,4" fill="none" />
+          </g>
+        )}
+        {/* Nail highlights on extended fingers */}
+        {fingers[1] === 1 && <ellipse cx={-8} cy={-36} rx={1.8} ry={1.2} fill="#f8e8d4" opacity={0.7} />}
+        {fingers[2] === 1 && <ellipse cx={-1} cy={-38} rx={1.8} ry={1.2} fill="#f8e8d4" opacity={0.7} />}
+        {fingers[3] === 1 && <ellipse cx={5} cy={-35} rx={1.8} ry={1.2} fill="#f8e8d4" opacity={0.7} />}
+        {fingers[4] === 1 && <ellipse cx={11} cy={-30} rx={1.5} ry={1} fill="#f8e8d4" opacity={0.7} />}
+        {fingers[0] === 1 && <ellipse cx={-22} cy={-16} rx={1.5} ry={2} fill="#f8e8d4" opacity={0.7} transform="rotate(-30,-22,-16)" />}
       </g>
     );
   };
 
-  const t = "all 0.45s cubic-bezier(0.33, 0, 0.2, 1)";
+  const tr = "all 0.45s cubic-bezier(0.33,0,0.2,1)";
 
   return (
-    <div className="relative w-full max-w-[300px] mx-auto">
+    <div className="relative w-full max-w-[320px] mx-auto">
       <svg viewBox="0 0 400 480" className="w-full h-auto">
         <defs>
-          <radialGradient id="bodyGlow" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="rgba(59,130,246,0.05)" />
+          <radialGradient id="bg" cx="50%" cy="40%" r="50%">
+            <stop offset="0%" stopColor="rgba(59,130,246,0.04)" />
             <stop offset="100%" stopColor="transparent" />
           </radialGradient>
-          <linearGradient id="shirtGrad" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#2563eb" />
-            <stop offset="100%" stopColor="#1d4ed8" />
+            <stop offset="100%" stopColor="#1e40af" />
+          </linearGradient>
+          <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e8c9a0" />
+            <stop offset="100%" stopColor="#d4b896" />
           </linearGradient>
         </defs>
 
-        <ellipse cx="200" cy="230" rx="180" ry="210" fill="url(#bodyGlow)" />
+        <ellipse cx="200" cy="240" rx="180" ry="210" fill="url(#bg)" />
 
         {/* Body */}
-        <path d="M 155 210 Q 140 410 200 420 Q 260 410 245 210"
-          fill="url(#shirtGrad)" stroke="#1e40af" strokeWidth={1} />
+        <path d="M 152 208 Q 138 415 200 425 Q 262 415 248 208"
+          fill="url(#shirt)" stroke="#1e3a8a" strokeWidth={1} />
+        {/* Collar */}
+        <path d="M 178 208 Q 200 220 222 208" fill="none" stroke="#1e3a8a" strokeWidth={1.5} />
 
         {/* Neck */}
-        <rect x="189" y="168" width="22" height="28" rx="5" fill="#d4b896" />
+        <rect x="189" y="168" width="22" height="30" rx="5" fill="url(#skin)" />
 
         {/* Head */}
-        <ellipse cx="200" cy="135" rx="42" ry="48" fill="#d4b896" stroke="#b89870" strokeWidth={1} />
+        <ellipse cx="200" cy="132" rx="44" ry="50" fill="url(#skin)" stroke="#b89870" strokeWidth={0.8} />
 
         {/* Hair */}
-        <ellipse cx="200" cy="102" rx="45" ry="28" fill="#3a2a1a" />
-        <ellipse cx="160" cy="118" rx="14" ry="22" fill="#3a2a1a" />
-        <ellipse cx="240" cy="118" rx="14" ry="22" fill="#3a2a1a" />
+        <ellipse cx="200" cy="97" rx="47" ry="30" fill="#2a1a0e" />
+        <ellipse cx="158" cy="114" rx="15" ry="24" fill="#2a1a0e" />
+        <ellipse cx="242" cy="114" rx="15" ry="24" fill="#2a1a0e" />
+
+        {/* Ears */}
+        <ellipse cx="154" cy="135" rx="6" ry="10" fill="#d4b896" stroke="#b89870" strokeWidth={0.5} />
+        <ellipse cx="246" cy="135" rx="6" ry="10" fill="#d4b896" stroke="#b89870" strokeWidth={0.5} />
 
         {/* Eyes */}
-        <ellipse cx="184" cy="133" rx="4.5" ry={currentSign.type !== "idle" ? 5 : 3.5} fill="#2a2a2a"
-          style={{ transition: "ry 0.3s" }} />
-        <ellipse cx="216" cy="133" rx="4.5" ry={currentSign.type !== "idle" ? 5 : 3.5} fill="#2a2a2a"
-          style={{ transition: "ry 0.3s" }} />
-        <circle cx="186" cy="132" r="1.3" fill="white" opacity={0.4} />
-        <circle cx="218" cy="132" r="1.3" fill="white" opacity={0.4} />
-
-        {/* Eyebrows */}
-        <line x1="176" y1={currentSign.type === "idle" ? 124 : 121} x2="192" y2={currentSign.type === "idle" ? 123 : 119}
-          stroke="#3a2a1a" strokeWidth={2.5} strokeLinecap="round" style={{ transition: t }} />
-        <line x1="208" y1={currentSign.type === "idle" ? 123 : 119} x2="224" y2={currentSign.type === "idle" ? 124 : 121}
-          stroke="#3a2a1a" strokeWidth={2.5} strokeLinecap="round" style={{ transition: t }} />
-
-        {/* Mouth */}
-        {currentSign.type === "idle" ? (
-          <path d="M 191 150 Q 200 155 209 150" fill="none" stroke="#9a7a6a" strokeWidth={1.5} strokeLinecap="round" />
-        ) : (
-          <ellipse cx="200" cy="151" rx="6" ry="4" fill="#9a7a6a" opacity={0.6} />
-        )}
-
-        {/* LEFT ARM */}
-        <line x1={L_SHOULDER_X} y1={SHOULDER_Y} x2={pos.lElbowX} y2={pos.lElbowY}
-          stroke="#1d4ed8" strokeWidth={16} strokeLinecap="round" style={{ transition: t }} />
-        <line x1={pos.lElbowX} y1={pos.lElbowY} x2={pos.lHandX} y2={pos.lHandY}
-          stroke="#d4b896" strokeWidth={12} strokeLinecap="round" style={{ transition: t }} />
-        {/* Elbow joint */}
-        <circle cx={pos.lElbowX} cy={pos.lElbowY} r={7} fill="#c4a882"
-          style={{ transition: t }} />
-        {/* Left hand */}
-        <g style={{ transition: t }}>
-          {renderHand(pos.lHandX, pos.lHandY, pos.lFingers, pos.rotation, true)}
+        <g style={{ transition: "transform 0.3s" }}>
+          {/* Left eye */}
+          <ellipse cx="182" cy="132" rx="8" ry="6" fill="white" />
+          <ellipse cx="182" cy="132" rx="4" ry={isActive ? 5 : 4} fill="#2a2a2a"
+            style={{ transition: "ry 0.3s" }} />
+          <circle cx="184" cy="131" r="1.5" fill="white" opacity={0.6} />
+          {/* Right eye */}
+          <ellipse cx="218" cy="132" rx="8" ry="6" fill="white" />
+          <ellipse cx="218" cy="132" rx="4" ry={isActive ? 5 : 4} fill="#2a2a2a"
+            style={{ transition: "ry 0.3s" }} />
+          <circle cx="220" cy="131" r="1.5" fill="white" opacity={0.6} />
         </g>
 
-        {/* RIGHT ARM */}
-        <line x1={R_SHOULDER_X} y1={SHOULDER_Y} x2={pos.rElbowX} y2={pos.rElbowY}
-          stroke="#2563eb" strokeWidth={16} strokeLinecap="round" style={{ transition: t }} />
-        <line x1={pos.rElbowX} y1={pos.rElbowY} x2={pos.rHandX} y2={pos.rHandY}
-          stroke="#d4b896" strokeWidth={12} strokeLinecap="round" style={{ transition: t }} />
-        {/* Elbow joint */}
-        <circle cx={pos.rElbowX} cy={pos.rElbowY} r={7} fill="#c4a882"
-          style={{ transition: t }} />
+        {/* Eyebrows */}
+        <path d={`M174,${isActive ? 119 : 122} Q183,${isActive ? 116 : 120} 192,${isActive ? 118 : 121}`}
+          fill="none" stroke="#2a1a0e" strokeWidth={2.5} strokeLinecap="round" style={{ transition: tr }} />
+        <path d={`M208,${isActive ? 118 : 121} Q217,${isActive ? 116 : 120} 226,${isActive ? 119 : 122}`}
+          fill="none" stroke="#2a1a0e" strokeWidth={2.5} strokeLinecap="round" style={{ transition: tr }} />
+
+        {/* Nose */}
+        <path d="M198,140 Q200,146 202,140" fill="none" stroke="#b89870" strokeWidth={1.2} strokeLinecap="round" />
+
+        {/* Mouth */}
+        {isActive ? (
+          <ellipse cx="200" cy="152" rx="6" ry="4.5" fill="#b87a6a" opacity={0.6}
+            style={{ transition: tr }} />
+        ) : (
+          <path d="M192,150 Q200,155 208,150" fill="none" stroke="#a08070" strokeWidth={1.5} strokeLinecap="round" />
+        )}
+
+        {/* === ARMS === */}
+        {/* Left arm - upper */}
+        <line x1={162} y1={195} x2={lElbow.x} y2={lElbow.y}
+          stroke="#1d4ed8" strokeWidth={17} strokeLinecap="round" style={{ transition: tr }} />
+        {/* Left arm - forearm */}
+        <line x1={lElbow.x} y1={lElbow.y} x2={lHand.x} y2={lHand.y}
+          stroke="#d4b896" strokeWidth={13} strokeLinecap="round" style={{ transition: tr }} />
+        {/* Left elbow */}
+        <circle cx={lElbow.x} cy={lElbow.y} r={8} fill="#bfa882" style={{ transition: tr }} />
+        {/* Left hand */}
+        <g style={{ transition: tr }}>
+          {renderHand(lHand.x, lHand.y, lFingers, rot, true)}
+        </g>
+
+        {/* Right arm - upper */}
+        <line x1={238} y1={195} x2={rElbow.x} y2={rElbow.y}
+          stroke="#2563eb" strokeWidth={17} strokeLinecap="round" style={{ transition: tr }} />
+        {/* Right arm - forearm */}
+        <line x1={rElbow.x} y1={rElbow.y} x2={rHand.x} y2={rHand.y}
+          stroke="#d4b896" strokeWidth={13} strokeLinecap="round" style={{ transition: tr }} />
+        {/* Right elbow */}
+        <circle cx={rElbow.x} cy={rElbow.y} r={8} fill="#bfa882" style={{ transition: tr }} />
         {/* Right hand */}
-        <g style={{ transition: t }}>
-          {renderHand(pos.rHandX, pos.rHandY, pos.rFingers, pos.rotation, false)}
+        <g style={{ transition: tr }}>
+          {renderHand(rHand.x, rHand.y, rFingers, rot, false)}
         </g>
       </svg>
 
       {/* Sign label */}
-      {currentSign.type !== "idle" && (
+      {isActive && (
         <div className="absolute bottom-1 left-1/2 -translate-x-1/2 sign-enter">
           <div className="bg-blue-600/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-white shadow-lg">
             {currentSign.type === "fingerspell" ? (
